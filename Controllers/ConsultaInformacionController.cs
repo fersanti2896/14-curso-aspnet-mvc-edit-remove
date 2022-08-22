@@ -89,5 +89,13 @@ namespace Pedidos.Controllers {
 
             return Json(pedidoId);
         }
+
+        [HttpPost]
+        public JsonResult EliminarPedidoDetalle(PedidoDTO modelo) {
+            var resultado = _IConsultaPedidoService.EliminarPedidoDetalle(modelo);
+
+            return Json(resultado);
+        }
+        
     }
 }

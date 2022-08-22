@@ -162,3 +162,32 @@ function EnvioGuardado() {
 
 	envioGenericos("/ConsultaInformacion/GuardadoPedido", modelo, MuestraResultado);
 }
+
+function EditarProducto(catProductoId, cantidad) {
+	$("#SelectProducto").val(catProductoId);
+	$("#PedidoCantidad").val(cantidad);
+
+	var imagen = $("#SelectProducto option:selected").text();
+	$("#ImagenProducto").attr("src", "/images/" + imagen + ".jpg");
+}
+
+function EliminarPedidoDetalle(jsonResult) {
+	/* Se refresca la tabla */
+	ConsultaDetallesDelPedido();
+
+	if (parseInt(jsonResult) == 0) {
+		MensajeExito("Se ha eliminado el pedido: " + $("#PedidoId").val())
+
+		/* Oculta el modal de la edición */
+		$(".swal2-backdrop-show").hide();
+
+		/* Se refresca la bandeja principal */
+		ConsultaGrid();
+	}
+}
+
+function EliminarProducto(detallePedidoId) {
+	var modelo = { detallePedidoId: detallePedidoId }
+
+	envioGenericos("/ConsultaInformacion/EliminarPedidoDetalle", modelo, EliminarPedidoDetalle);
+}
