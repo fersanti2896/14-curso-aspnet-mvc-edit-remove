@@ -82,5 +82,12 @@ namespace Pedidos.Controllers {
 
             return PartialView(lista);
         }
+
+        [HttpPost]
+        public JsonResult GuardadoPedido(PedidoEdoDTO modelo) {
+            var pedidoId = _IConsultaPedidoService.GuardadoPedido(modelo);
+
+            return Json(pedidoId);
+        }
     }
 }

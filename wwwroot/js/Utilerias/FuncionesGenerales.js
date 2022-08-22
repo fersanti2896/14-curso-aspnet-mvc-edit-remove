@@ -18,7 +18,7 @@ function envioGenericos( controlador, modelo, callback ) {
             }
         },
         error: function (errorHTML) {
-            alert(controlador + ":" + JSON.stringify(errorHTML));
+            MensajeError(controlador + ":" + JSON.stringify(errorHTML));
         },
         complete: function () {
         }
@@ -65,9 +65,9 @@ function GenerarPDF() {
         },
         error: function (errorHtml) {
             if (errorHtml.responseJSON != undefined) {
-                alert(errorHtml.responseJSON.error)
+                MensajeError(errorHtml.responseJSON.error)
             } else {
-                alert(controlador + ":" + JSON.stringify(errorHtml));
+                MensajeError(controlador + ":" + JSON.stringify(errorHtml));
             }
             
         },
@@ -114,5 +114,25 @@ function GenerarVisorPDF() {
         complete: function () {
 
         }
+    });
+}
+
+function MensajeError(msg) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = msg;
+
+    swal({
+        content: wrapper
+    });
+
+    $(".swal-button").addClass("btn-danger");
+}
+
+function MensajeExito(msg) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = msg;
+
+    swal({
+        content: wrapper
     });
 }

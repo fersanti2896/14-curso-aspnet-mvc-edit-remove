@@ -1,4 +1,5 @@
-﻿
+﻿const { parseHTML, error } = require("jquery");
+
 function AgregarPedido(PedidoId) {
 	ConsultaDetallePedido(PedidoId);
 }
@@ -44,6 +45,15 @@ function EdicionPedido(html) {
 		},
 		preConfirm: function (resultado) {
 			/* Comportamiento detonadas por el botón confirmar */
+			var errores = ValidaModelo();
+
+			/* Valida error y muestra alerta */
+			if (errores.length != 0) {
+				MensajeError(errores);
+			} else {
+				EnvioGuardado();
+			}
+
 			return cerrar;
 		},
 		confirmButtonText: '<i class="far fa-save"></i> Guardar',
@@ -90,4 +100,65 @@ function ConsultaDetallesDelPedido() {
 	var modelo = { PedidoId: $("#PedidoId").val() }
 
 	envioGenericos("/ConsultaInformacion/ConsultaDetallesDelPedido", modelo, "TablaDetallePedido")
+}
+
+function ValidaModelo() {
+	var errores  = "";
+	var PedidoId = parseInt($("#PedidoId").val());
+
+	var CatEstadoRepublicaId = $("#SelectEstadosRepublica option:selected").val();
+	var CatProductoId		 = $("#SelectProducto option:selected").val();
+	var Cantidad = parseInt($("#PedidoCantidad").val());
+
+	if (Cantidad < 0) Cantidad = 0;
+
+	/* Validaciones: Se agrega un nuevo pedido */
+	if (PedidoId == 0) {
+		if (CatEstadoRepublicaId == 0) {
+			errores += "-- Favor de Seleccionar el Estado de la República -- <br>";
+		}
+
+		if (Cantidad == 0) {
+			errores += "-- Favor de Indicar la Cantidad -- <br>";
+		}
+
+		if (CatProductoId == 0) {
+			errores += "-- Favor de Seleccionar el Producto -- <br>";
+		}
+	} else {
+		/* En otro caso se agrega el pedido */
+		if (CatProductoId == 0 && CatEstadoRepublicaId == 0) {
+			errores += "-- Favor de Seleccionar el Estado de la República -- <br>";
+			errores += "-- Favor de Seleccionar el Producto -- <br>";
+		}
+
+		if (CatProductoId != 0 && Cantidad == 0) {
+			errores += "-- Favor de Indicar la Cantidad -- <br>";
+        }
+	}
+
+	return errores;
+}
+
+/* Recibe un resultado */
+function MuestraResultado(PedidoId) {
+	$("#PedidoId").val(PedidoId);
+	$("#swal2-title").html('<strong>Edición del pedido <u>' + PedidoId + '</u></strong>'); /* Actualiza el titulo */
+
+	/* Actualiza los resultados de la tabla del detalle pedidos*/
+	ConsultaDetallesDelPedido();
+
+	/* Actualiza la bandeja principal con el nuevo pedido */
+	ConsultaGrid();
+}
+
+function EnvioGuardado() {
+	var modelo = {
+		CatProductoId: $("#SelectProducto option:selected").val(),
+		CatEstadoRepublicaId: $("#SelectEstadosRepublica option:selected").val(),
+		PedidoId: parseInt($("#PedidoId").val()),
+		Cantidad: parseInt($("#PedidoCantidad").val())
+	}
+
+	envioGenericos("/ConsultaInformacion/GuardadoPedido", modelo, MuestraResultado);
 }
